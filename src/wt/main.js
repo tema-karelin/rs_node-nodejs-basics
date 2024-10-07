@@ -13,7 +13,7 @@ const filePath = path.join(__dirname, ".", "worker.js");
 
 const cpuNumber = cpus().length;
 
-const resArr = [];
+const resArr = new Array(cpuNumber);
 
 const createWorker = (id, n) => {
   return new Promise((res, rej) => {
@@ -28,16 +28,21 @@ const createWorker = (id, n) => {
         status: "resolved",
         data: result,
       };
-      resArr.push(resObj);
+      resArr[id] = resObj;
       res()
     });
     // error
     worker.on("error", (err) => {
-      resArr.push({
-        status: 'error',
-        data: null,
-      });
-      console.log(`\n> ERROR in the worker N ${id}\n> Recieved number: ${n}\n`);
+      // resArr.push({
+      //   status: 'error',
+      //   data: null,
+      // });
+      const resObj = {
+          status: 'error',
+          data: null,
+      };
+      resArr[id] = resObj;
+      console.log(`\x1b[31m \n> ERROR in the worker N ${id}\n> Recieved number: ${n}\n \x1b[0m`);
       rej()
     });
   });
